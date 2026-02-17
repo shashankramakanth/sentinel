@@ -1,0 +1,20 @@
+version: '3.8'
+
+services:
+  azure-terraform:
+    build: .
+    container_name: azure-terraform-container
+    volumes:
+      # Mount only workspace and terraform cache (no Azure config persistence)
+      - ./azure-data:/workspace
+      - ./terraform-cache:/root/.terraform
+      - ../../../sentinel:/sentinel
+    environment:
+      # Azure credentials will be passed via environment variables
+      - AZURE_CLIENT_ID=${AZURE_CLIENT_ID}
+      - AZURE_CLIENT_SECRET=${AZURE_CLIENT_SECRET}
+      - AZURE_TENANT_ID=${AZURE_TENANT_ID}
+    stdin_open: true
+    tty: true
+    working_dir: /workspace
+    command: tail -f /dev/null  # Keep container running
